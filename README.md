@@ -1,4 +1,4 @@
-# Fetch
+# Fetch Extension
 
 ## What is it?
 
@@ -7,10 +7,10 @@ This extension is for reading files and URLs within NetLogo, with an eye towards
 ## Why use it?
 
   1. Because NetLogo doesn't come with primitives for reading from URLs
-  2. The Web extension provides the ability to read from URLs for more complicated use cases, but won't be implemented in NetLogo Web anytime soon
+  2. While the Web extension provides the ability to read from URLs for more complicated use cases, it won't be implemented in NetLogo Web anytime soon
   3. Because it provides async primitives that will allow for a common API between desktop NetLogo and NetLogo Web
 
-If you just want to read files, and you are happy with NetLogo's `file-open` (et al), you do *not* need this extension.  If, however, you want to read URLs, or what interoperability with NetLogo Web, this is the extension for you.
+If you just want to read files, and you are happy with NetLogo's `file-open` (et al), you do *not* need this extension.  If, however, you want to read URLs, or want interoperability with NetLogo Web, then this is the extension for you.
 
 Note: The synchronous primitives here might not work in the NetLogo Web version (due to limitations of JavaScript), so stick to the async ones if you can.
 
@@ -36,9 +36,9 @@ JavaScript handles this situation by making long-running operations *asynchronou
 
 So when we have an asynchronous primitive, like in `fetch:file-async user-file [contents -> show contents]`, that means that `[contents -> show contents]` could first run at any time after that line of code has been executed, and we can't predict it.
 
-The benefits of this are debatable, but it seems likely that, for most people, the only benefits of using the `async` primitives will be that they work in NetLogo Web.
+The benefits of this are debatable, but it seems likely that, for most people, the only benefits of using the `async` primitives will be that they work in NetLogo Web.  (Not that that's a minor thing!)
 
-## I tried reading a file, and I got a bunch of gobbledegook back.  What's up with that?
+## I tried reading a file, and I got a bunch of gobbledegook back.  Why?
 
 If you try to read from a source (i.e. file or URL) that can be decoded as UTF-8 (plain text), then the extension will read the source as UTF-8 (plain text).  If, however, it cannot be decoded as plain text, `fetch` will convert the source to [base64-encoded plain text](https://en.wikipedia.org/wiki/Base64).
 
