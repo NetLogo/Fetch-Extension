@@ -14,6 +14,13 @@ If you just want to read files, and you are happy with NetLogo's `file-open` (et
 
 Note: The synchronous primitives here might not work in the NetLogo Web version (due to limitations of JavaScript), so stick to the async ones if you can.
 
+## Primitives
+
+  * `file` *filepath* | Synchronously read the file at `filepath` and return its contents as a string
+  * `file-async` *filepath* *callback* | Asynchronously read the file at `filepath`, whenever that is done, run `callback`, passing the contents of the file as `callback`'s sole argument
+  * `url` *url* | Synchronously read the URL at `url` and return its contents as a string
+  * `url-async` *url* *callback* | Asynchronously read the URL at `url`, whenever that is done, run `callback`, passing the content from the URL as `callback`'s sole argument
+
 ## Example Code
 
 This extension was primarily intended as a companion to the `import-a` extension, so our example code will use that.
