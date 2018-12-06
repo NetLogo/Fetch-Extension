@@ -1,0 +1,19 @@
+File
+  extensions [fetch]
+  fetch:file "extensions/fetch/lorem-ipsum.txt" => "Lorem ipsum dolor sit amet, consectetur adipiscing elit.\n"
+
+FileAsync
+  globals [glob1]
+  extensions [fetch]
+  O> fetch:file-async "extensions/fetch/lorem-ipsum.txt" [x -> set glob1 x]
+  glob1 => "Lorem ipsum dolor sit amet, consectetur adipiscing elit.\n"
+
+URL
+  extensions [fetch]
+  (length (fetch:url "https://www.wikipedia.org/")) > 1000 => true
+
+URLAsync
+  globals [glob1]
+  extensions [fetch]
+  O> fetch:url-async "https://www.wikipedia.org/" [x -> set glob1 x]
+  (length glob1) > 1000 => true
