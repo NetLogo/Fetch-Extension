@@ -16,10 +16,12 @@ Note: The synchronous primitives here might not work in the NetLogo Web version 
 
 ## Primitives
 
-  * `file` *filepath* | Synchronously read the file at `filepath` and return its contents as a string
-  * `file-async` *filepath* *callback* | Asynchronously read the file at `filepath`, whenever that is done, run `callback`, passing the contents of the file as `callback`'s sole argument
-  * `url` *url* | Synchronously read the URL at `url` and return its contents as a string
-  * `url-async` *url* *callback* | Asynchronously read the URL at `url`, whenever that is done, run `callback`, passing the content from the URL as `callback`'s sole argument
+| Prim Name    | Arguments             | Behavior
+| ------------ | --------------------- | --------
+| `file`       | *filepath*            | Synchronously read the file at `filepath` and return its contents as a string
+| `file-async` | *filepath* *callback* | Asynchronously read the file at `filepath`, whenever that is done, run `callback`, passing the contents of the file as `callback`'s sole argument
+| `url`        | *url*                 | Synchronously read the URL at `url` and return its contents as a string
+| `url-async`  | *url* *callback*      | Asynchronously read the URL at `url`, whenever that is done, run `callback`, passing the content from the URL as `callback`'s sole argument
 
 ## Example Code
 
