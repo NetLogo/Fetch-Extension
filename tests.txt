@@ -17,3 +17,16 @@ URLAsync
   extensions [fetch]
   O> fetch:url-async "https://www.wikipedia.org/" [x -> set glob1 x]
   (length glob1) > 1000 => true
+
+Errors
+  extensions [fetch]
+  fetch:file "adsfsafd" => ERROR Extension exception: File not found: adsfsafd
+  O> fetch:file-async "adsfsafd" [->] => ERROR Extension exception: File not found: adsfsafd
+  fetch:url "adsfsafd" => ERROR Extension exception: Ensure that your URL is prefixed with a valid protocol (e.g. 'http://', 'https://', 'file://'): no protocol: adsfsafd
+  fetch:url "http://adsfsafd" => ERROR Extension exception: Unable to fetch (probably because no resource exists at the given location): adsfsafd
+  fetch:url "https://adsfsafd" => ERROR Extension exception: Unable to fetch (probably because no resource exists at the given location): adsfsafd
+  fetch:url "file://adsfsafd" => ERROR Extension exception: Unable to fetch (probably because no resource exists at the given location): adsfsafd
+  O> fetch:url-async "adsfsafd" [->] => ERROR Extension exception: Ensure that your URL is prefixed with a valid protocol (e.g. 'http://', 'https://', 'file://'): no protocol: adsfsafd
+  O> fetch:url-async "http://adsfsafd" [->] => ERROR Extension exception: Unable to fetch (probably because no resource exists at the given location): adsfsafd
+  O> fetch:url-async "https://adsfsafd" [->] => ERROR Extension exception: Unable to fetch (probably because no resource exists at the given location): adsfsafd
+  O> fetch:url-async "file://adsfsafd" [->] => ERROR Extension exception: Unable to fetch (probably because no resource exists at the given location): adsfsafd

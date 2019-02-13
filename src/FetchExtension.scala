@@ -1,8 +1,8 @@
 package org.nlogo.extension.fetch
 
 import java.io.IOException
-import java.net.URL
-import java.nio.file.{ Files, NoSuchFileException, Paths }
+import java.net.{ MalformedURLException, URL }
+import java.nio.file.{ Files, InvalidPathException, NoSuchFileException, Path, Paths }
 import java.util.Base64
 
 import org.nlogo.api.{ Argument, Command, Context, DefaultClassManager, ExtensionException, PrimitiveManager, Reporter }
@@ -22,7 +22,7 @@ class FetchExtension extends DefaultClassManager {
   private object FilePrim extends Reporter {
     override def getSyntax = Syntax.reporterSyntax(right = List(Syntax.StringType), ret = Syntax.StringType)
     override def report(args: Array[Argument], context: Context): AnyRef = {
-      val path = Paths.get(args(0).getString)
+      val path = getPath(args(0).getString)
       slurp(Files.probeContentType(path)) { Files.readAllBytes(path) }
     }
   }
@@ -30,7 +30,7 @@ class FetchExtension extends DefaultClassManager {
   private object FileAsyncPrim extends Command {
     override def getSyntax = Syntax.commandSyntax(right = List(Syntax.StringType, Syntax.CommandType))
     override def perform(args: Array[Argument], context: Context): Unit = {
-      val path     = Paths.get(args(0).getString)
+      val path     = getPath(args(0).getString)
       val command  = args(1).getCommand
       val contents = slurp(Files.probeContentType(path)) { Files.readAllBytes(path) }
       command.perform(context, Array(contents))
@@ -40,7 +40,7 @@ class FetchExtension extends DefaultClassManager {
   private object URLPrim extends Reporter {
     override def getSyntax = Syntax.reporterSyntax(right = List(Syntax.StringType), ret = Syntax.StringType)
     override def report(args: Array[Argument], context: Context): AnyRef = {
-      val url = new URL(args(0).getString)
+      val url = newURL(args(0).getString)
       slurp(url.openConnection().getContentType) {
         using(url.openStream()) {
           (urlConn) => Stream.continually(urlConn.read).takeWhile(_ != -1).map(_.toByte).toArray
@@ -52,7 +52,7 @@ class FetchExtension extends DefaultClassManager {
   private object URLAsyncPrim extends Command {
     override def getSyntax = Syntax.commandSyntax(right = List(Syntax.StringType, Syntax.CommandType))
     override def perform(args: Array[Argument], context: Context): Unit = {
-      val url      = new URL(args(0).getString)
+      val url      = newURL(args(0).getString)
       val command  = args(1).getCommand
       val contents =
         slurp(url.openConnection().getContentType) {
@@ -67,7 +67,30 @@ class FetchExtension extends DefaultClassManager {
   private def using[T <: { def close(): Unit }, U](t: T)(f: (T) => U): U =
     try { f(t) } finally { t.close() }
 
-  private def slurp(mimeType: String)(f: => Array[Byte]): String = {
+  private def getPath(path: String): Path = {
+    try Paths.get(path)
+    catch {
+      case ex: InvalidPathException =>
+        throw new ExtensionException(s"Could not parse path: ${ex.getMessage}", ex)
+    }
+  }
+
+  private def newURL(url: String): URL = {
+    try new URL(url)
+    catch {
+      case ex: MalformedURLException =>
+        throw new ExtensionException(s"Ensure that your URL is prefixed with a valid protocol (e.g. 'http://', 'https://', 'file://'): ${ex.getMessage}", ex)
+    }
+  }
+
+  private def slurp(mimeType: => String)(f: => Array[Byte]): String = {
+
+    val contentType =
+      try mimeType
+      catch {
+        case ex: IOException =>
+          throw new ExtensionException(s"Failed to probe content type (probably because no resource exists at the given location): ${ex.getMessage}", ex)
+      }
 
     val bytes =
       try f
@@ -75,7 +98,7 @@ class FetchExtension extends DefaultClassManager {
         case ex: NoSuchFileException =>
           throw new ExtensionException(s"File not found: ${ex.getMessage}", ex)
         case ex: IOException =>
-          throw new ExtensionException(s"Unable to fetch: ${ex.getMessage}", ex)
+          throw new ExtensionException(s"Unable to fetch (probably because no resource exists at the given location): ${ex.getMessage}", ex)
       }
 
     val str = new String(bytes, "UTF-8")
@@ -83,7 +106,7 @@ class FetchExtension extends DefaultClassManager {
     if (bytes.sameElements(str.getBytes()))
       str
     else {
-      s"data:$mimeType;base64,${Base64.getEncoder().encodeToString(bytes)}"
+      s"data:$contentType;base64,${Base64.getEncoder().encodeToString(bytes)}"
     }
 
   }
