@@ -23,7 +23,7 @@ class FetchExtension extends DefaultClassManager {
     override def getSyntax = Syntax.reporterSyntax(right = List(Syntax.StringType), ret = Syntax.StringType)
     override def report(args: Array[Argument], context: Context): AnyRef = {
       val path = getPath(args(0).getString)
-      slurp(Files.probeContentType(path)) { Files.readAllBytes(path) }
+      slurp(path.toUri.toURL.openConnection().getContentType) { Files.readAllBytes(path) }
     }
   }
 
@@ -32,7 +32,7 @@ class FetchExtension extends DefaultClassManager {
     override def perform(args: Array[Argument], context: Context): Unit = {
       val path     = getPath(args(0).getString)
       val command  = args(1).getCommand
-      val contents = slurp(Files.probeContentType(path)) { Files.readAllBytes(path) }
+      val contents = slurp(path.toUri.toURL.openConnection().getContentType) { Files.readAllBytes(path) }
       command.perform(context, Array(contents))
     }
   }
