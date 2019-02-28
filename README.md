@@ -113,21 +113,27 @@ Where `A`, `X`, and `C` are functions that accept functions as arguments, as `F`
 
 In most programming languages, statements are synchronous by default, but, using this example that has been provided, let's say that the statement `X(Y)` might be either synchronous or asynchronous.  In the case that `X` is synchronous, the code runs exactly how you would intuitively expect it to: `A` executes `F`, then `X` executes function `Y`, then `C` executes `G`.  In synchronous environments, the order in which the code is run is linear and predictable.
 
-JavaScript (the language that runs in your web browser) is a language that only dedicates processor one thread to each web page (not strictly true, but true enough for our purposes here).  What that means is that, if some long-running process is hogging that one thread, then you might have difficulties scrolling around the page, clicking on elements, typing, or seeing visual updates to the page, since none of the code for those things can be run until the long-running function has finished.
+JavaScript (the language that runs in your web browser) is a language that only dedicates one processor thread to each web page (not strictly true, but true enough for our purposes here).  What that means is that, if some long-running process is hogging that one thread, then you might have difficulties scrolling around the page, clicking on elements, typing, or seeing visual updates to the page, since none of the code for those things can be run until the long-running function has finished.
 
 So, going back to our example, it would be problematic in the browser if `Y` were a long-running function (like something that reads a large file off of your disk).  If we tried to run `Y` *immediately* when we reached that line, it would greatly delay running `C(G)`, and would also slow down any browser interactions (as described in the previous paragraph).
 
 JavaScript handles this situation by making long-running operations *asynchronous*.  What that effectively means is that, when running the example code above, `A` will execute `F`, and then `X` will tell the browser to run `Y` when it gets a chance, and, without waiting for `Y` to be executed, will then move on to having `C` execute `G`.  When does `Y` get executed?  We don't know, and we can't predict it.  It could be before `C` runs `G`; it could be right after; it could be five minutes from now.  The code does not run linearly.  And, if we had some code that relied on the result of `Y`, we would essentially have to extend `Y` to append that code and run after the main code of `Y` (see the `test-world-file-and-then` example below for a demonstration of this).
 
-So when we have an asynchronous primitive, like in `fetch:file-async user-file [contents -> show contents]`, that means that `[contents -> show contents]` could first run at any time after that line of code has been executed, and we can't predict it.
+So when we have an asynchronous primitive, like in `fetch:file-async user-file [contents -> show contents]`, that means that `[contents -> show contents]` could first run at any time after that line of code has been executed, and we can't predict precisely when.
 
-The benefits of this are debatable, but it seems likely that, for most people, the only benefits of using the `async` primitives will be that they work in NetLogo Web.  (Not that that's a minor thing!)
+The benefits of this are debatable, but it seems likely that, for most people, the only benefits of using the `async` primitives will be that they work in NetLogo Web (not that that is a minor thing).
 
 ## I tried reading a file, and I got a bunch of gobbledegook back.  Why?
 
 If you try to read from a source (i.e. file or URL) that can be decoded as UTF-8 (plain text), then the extension will read the source as UTF-8 (plain text).  If, however, it cannot be decoded as plain text, `fetch` will convert the source to [base64-encoded plain text](https://en.wikipedia.org/wiki/Base64).
 
-Note that the other reasonable alternative would be for the extension to convert your source to a list of numbers (bytes).  But it seems more likely that someone would want to deal with the base64 version of the source (especially when using it with the `import-a` extension), so we went with base64.
+Note that the other reasonable alternative would be for the extension to convert your source to a list of numbers (bytes).  But it seems more likely that someone would want to deal with the base64 representation of the source (especially when using it with the `import-a` extension), so we went with base64.
+
+## I tried fetching a URL, and I didn't get a result back.  There's definitely something at that URL.  Why did the operation fail?
+
+When using `url` and `url-async` in NetLogo Web, you need to be mindful of [CORS](https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS).  CORS is a system used by browsers to prevent, for example, Website A reading your browser's cookies and making a request to Website B to perform a privileged action on Website B (such as reading your e-mails through a web interface).  That sort of scenario poses a clear security issue.  There are only two times when this sort of request is ever allowed: (a) when Website A and Website B are running on the same web domain (URL), and (b) when Website B explicitly opts into this by setting their HTTP responses' `Access-Control-Allow-Origin` headers.  Many websites do not set this header, and, as such, do not allow cross-origin requests.
+
+If you run into this problem, try hosting your resource (e.g. the image that you want to fetch) on the same website that the NetLogo Web is running on.  (If you're using the NetLogo desktop application, this issue never comes up, because the NetLogo application isn't running on any web domain.)  If you cannot do that, try using a CORS proxy service (like [this one](https://cors-anywhere.herokuapp.com)) or re-host the resource, yourself, on a different service—one that has CORS enabled.
 
 ## Building
 
