@@ -1,5 +1,6 @@
 package org.nlogo.extension.fetch
 
+import java.lang.{ Boolean => JBoolean }
 import java.io.IOException
 import java.net.{ MalformedURLException, URL }
 import java.nio.file.{ Files, InvalidPathException, NoSuchFileException, Path, Paths }
@@ -7,16 +8,19 @@ import java.util.Base64
 
 import org.nlogo.api.{ Argument, Command, Context, DefaultClassManager, ExtensionException, PrimitiveManager, Reporter }
 import org.nlogo.core.{ LogoList, Syntax }
+import org.nlogo.nvm.HaltException
 
 import scala.language.reflectiveCalls
 
 class FetchExtension extends DefaultClassManager {
 
   override def load(manager: PrimitiveManager): Unit = {
-    manager.addPrimitive("file"      , FilePrim)
-    manager.addPrimitive("file-async", FileAsyncPrim)
-    manager.addPrimitive("url"       , URLPrim)
-    manager.addPrimitive("url-async" , URLAsyncPrim)
+    manager.addPrimitive("file"           , FilePrim)
+    manager.addPrimitive("file-async"     , FileAsyncPrim)
+    manager.addPrimitive("url"            , URLPrim)
+    manager.addPrimitive("url-async"      , URLAsyncPrim)
+    manager.addPrimitive("user-file"      , UserFilePrim)
+    manager.addPrimitive("user-file-async", UserFileAsyncPrim)
   }
 
   private object FilePrim extends Reporter {
@@ -61,6 +65,34 @@ class FetchExtension extends DefaultClassManager {
           }
         }
       command.perform(context, Array(contents))
+    }
+  }
+
+  private object UserFilePrim extends Reporter {
+    override def getSyntax = Syntax.reporterSyntax(right = List(), ret = Syntax.StringType)
+    override def report(args: Array[Argument], context: Context): AnyRef = {
+      val falseOrPath = UserFile.userFileSync(context.workspace)
+      falseOrPath.fold(identity, pathStr => {
+        val path = getPath(pathStr)
+        slurp(path.toUri.toURL.openConnection().getContentType) { Files.readAllBytes(path) }
+      })
+    }
+  }
+
+  private object UserFileAsyncPrim extends Command {
+    override def getSyntax = Syntax.commandSyntax(right = List(Syntax.CommandType))
+    override def perform(args: Array[Argument], context: Context): Unit = {
+      val command = args(0).getCommand
+      UserFile.userFileAsync(context.workspace) {
+        _ match {
+          case JBoolean.FALSE =>
+            command.perform(context, Array(JBoolean.FALSE))
+          case pathStr: String =>
+            val path     = getPath(pathStr)
+            val contents = slurp(path.toUri.toURL.openConnection().getContentType) { Files.readAllBytes(path) }
+            command.perform(context, Array(contents))
+        }
+      }
     }
   }
 

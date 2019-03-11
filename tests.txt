@@ -18,6 +18,15 @@ URLAsync
   O> fetch:url-async "https://www.wikipedia.org/" [x -> set glob1 x]
   (length glob1) > 1000 => true
 
+UserFile
+  extensions [fetch]
+  fetch:user-file => ERROR Extension exception: You can't get user input headlessly.
+
+UserFileAsync
+  globals [glob1]
+  extensions [fetch]
+  O> fetch:user-file-async [x -> set glob1 x] => ERROR Extension exception: You can't get user input headlessly.
+
 Errors
   extensions [fetch]
   fetch:file "adsfsafd" => ERROR Extension exception: File not found: adsfsafd
