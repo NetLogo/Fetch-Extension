@@ -6,7 +6,7 @@ netLogoClassManager := "org.nlogo.extension.fetch.FetchExtension"
 
 netLogoZipSources := false
 
-version := "1.0.2"
+version := "1.0.3"
 
 scalaVersion := "2.12.8"
 
