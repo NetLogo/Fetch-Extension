@@ -133,12 +133,17 @@ class FetchExtension extends DefaultClassManager {
           throw new ExtensionException(s"Unable to fetch (probably because no resource exists at the given location): ${ex.getMessage}", ex)
       }
 
-    val str = new String(bytes, "UTF-8")
+    val CharsetRegex = "(?i)^text/.*?;\\s*charset=(.*)$".r
 
-    if (bytes.sameElements(str.getBytes()))
-      str
-    else {
-      s"data:$contentType;base64,${Base64.getEncoder().encodeToString(bytes)}"
+    contentType match {
+      case CharsetRegex(charset) =>
+        new String(bytes, charset)
+      case x =>
+        val str = new String(bytes, "UTF-8")
+        if (bytes.sameElements(str.getBytes()))
+          str
+        else
+          s"data:$contentType;base64,${Base64.getEncoder().encodeToString(bytes)}"
     }
 
   }
