@@ -16,12 +16,14 @@ Note: The synchronous primitives here might not work in the NetLogo Web version 
 
 ## Primitives
 
-| Prim Name    | Arguments             | Behavior
-| ------------ | --------------------- | --------
-| `file`       | *filepath*            | Synchronously read the file at `filepath` and return its contents as a string
-| `file-async` | *filepath* *callback* | Asynchronously read the file at `filepath`, whenever that is done, run `callback`, passing the contents of the file as `callback`'s sole argument
-| `url`        | *url*                 | Synchronously read the URL at `url` and return its contents as a string
-| `url-async`  | *url* *callback*      | Asynchronously read the URL at `url`, whenever that is done, run `callback`, passing the content from the URL as `callback`'s sole argument
+| Prim Name         | Arguments             | Behavior
+| ----------------- | --------------------- | --------
+| `file`            | *filepath*            | Synchronously read the file at `filepath` and return its contents as a string
+| `file-async`      | *filepath* *callback* | Asynchronously read the file at `filepath`, whenever that is done, run `callback`, passing the contents of the file as `callback`'s sole argument
+| `url`             | *url*                 | Synchronously read the URL at `url` and return its contents as a string
+| `url-async`       | *url* *callback*      | Asynchronously read the URL at `url`, whenever that is done, run `callback`, passing the content from the URL as `callback`'s sole argument
+| `user-file`       |                       | Synchronously open a file dialog and, whenever the user selects a file, return the contents of that file as a string (base64-encoded if the file is not a text document), or return `false` if the user cancels the file dialog
+| `user-file-async` | *callback*            | Asynchronously open a file dialog and, whenever the user selects a file, pass the contents of that file as a string (base64-encoded if the file is not a text document) as `callback`'s sole argument, or pass in `false` if the user cancels the file dialog
 
 ## Example Code
 
@@ -52,6 +54,24 @@ end
 to test-fetch-file-verbose-syntax
   clear-all
   fetch:file-async user-file [text -> show text]
+end
+
+; Printing of the contents of a file, using the synchronous primitive in this extension
+to test-fetch-user-file-sync
+  clear-all
+  show fetch:user-file
+end
+
+; Printing of the contents of a file, using the asynchronous primitive in this extension
+to test-fetch-user-file-async
+  clear-all
+  fetch:user-file-async show
+end
+
+; Printing of the contents of a file, async, without using the 'concise' anonproc syntax
+to test-fetch-user-file-verbose-syntax
+  clear-all
+  fetch:user-file-async [text -> show text]
 end
 
 ; Printing of the content from a URL, using the synchronous primitive in this extension
