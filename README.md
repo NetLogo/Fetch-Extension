@@ -155,6 +155,10 @@ When using `url` and `url-async` in NetLogo Web, you need to be mindful of [CORS
 
 If you run into this problem, try hosting your resource (e.g. the image that you want to fetch) on the same website that the NetLogo Web is running on.  (If you're using the NetLogo desktop application, this issue never comes up, because the NetLogo application isn't running on any web domain.)  If you cannot do that, try using a CORS proxy service (like [this one](https://cors-anywhere.herokuapp.com)) or re-host the resource, yourself, on a different service—one that has CORS enabled.
 
+## I tried fetching a resource and printing it out to the Command Center, and now NetLogo is super slow!  What happened?!
+
+When you fetch things, you receive their contents as strings.  When you fetch a very large thing, you will be given a very large string.  The NetLogo Command Center does not take well to printing out very large strings, and will likely slow to a crawl if given one.  However, do note that you can speed NetLogo back up again by clicking the "Clear" button next to the Command Center output window, thereby disposing of the enormously long string (and all other strings in the Command Center).
+
 ## Building
 
 Open it in SBT.  If you successfully run `package`, `fetch.jar` is created.
