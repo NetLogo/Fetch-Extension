@@ -29,6 +29,8 @@ Note: The synchronous primitives here might not work in the NetLogo Web version 
 
 This extension was primarily intended as a companion to the `import-a` extension, so our example code will use that.
 
+This first set contains only NetLogo Web compatible examples.
+
 ```netlogo
 extensions [import-a fetch]
 
@@ -37,6 +39,51 @@ to test-fetch-reporter
   clear-all
   show "I'm a little reporter, short and stout.  Here is my input.  Here is my out."
 end
+
+; Printing of the contents of a file, using the asynchronous primitive in this extension
+to test-fetch-user-file-async
+  clear-all
+  fetch:user-file-async show
+end
+
+; Printing of the contents of a file, async, without using the 'concise' anonproc syntax
+to test-fetch-user-file-verbose-syntax
+  clear-all
+  fetch:user-file-async [text -> show text]
+end
+
+; Importing world state from a file and then running some other code once it has completed
+to test-world-user-file-and-then
+  clear-all
+  fetch:user-file-async [
+    text ->
+      import-a:world text
+      show "Success!"
+  ]
+end
+
+; Printing of the content from a URL
+to test-fetch-url-async
+  clear-all
+  fetch:url-async "http://www.netlogoweb.org/" show
+end
+
+; Printing content from a URL and then running some other code once it has completed
+to test-fetch-url-and-then
+  clear-all
+  fetch:url-async "http://www.netlogoweb.org/" [
+    text ->
+      show text
+      show "Success!"
+  ]
+  show "Procedure complete."
+end
+```
+
+The rest of these examples are not NetLogo Web compatible.
+
+```netlogo
+extensions [import-a fetch]
 
 ; Printing of the contents of a file, using the synchronous primitive in this extension
 to test-fetch-file-sync
@@ -60,18 +107,6 @@ end
 to test-fetch-user-file-sync
   clear-all
   show fetch:user-file
-end
-
-; Printing of the contents of a file, using the asynchronous primitive in this extension
-to test-fetch-user-file-async
-  clear-all
-  fetch:user-file-async show
-end
-
-; Printing of the contents of a file, async, without using the 'concise' anonproc syntax
-to test-fetch-user-file-verbose-syntax
-  clear-all
-  fetch:user-file-async [text -> show text]
 end
 
 ; Printing of the content from a URL, using the synchronous primitive in this extension
