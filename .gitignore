@@ -2,4 +2,5 @@ target/
 /.bsp/
 
 /fetch.jar
+/*.zip
 /.bundledFiles
