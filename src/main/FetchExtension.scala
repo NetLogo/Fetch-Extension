@@ -1,7 +1,7 @@
 package org.nlogo.extension.fetch
 
 import java.lang.{ Boolean => JBoolean }
-import java.io.IOException
+import java.io.{ Closeable, IOException }
 import java.net.{ MalformedURLException, URL }
 import java.nio.file.{ Files, InvalidPathException, NoSuchFileException, Path, Paths }
 import java.util.Base64
@@ -96,8 +96,16 @@ class FetchExtension extends DefaultClassManager {
     }
   }
 
-  private def using[T <: { def close(): Unit }, U](t: T)(f: (T) => U): U =
-    try { f(t) } finally { t.close() }
+  // this used to be `using[T <: { def close(): Unit }, U]`, but Scala then used reflection to make sure it could call
+  // `t.close()`, but that broke Java 11+ new stricter module separation rules causing a runtime error.  There isn't
+  // much danger of someone changing it back, I just wanted to note the oddity here for anyone who happens to read this
+  // code.  -Jeremy B September 2022
+  private def using[T <: Closeable, U](t: T)(f: (T) => U): U =
+    try {
+      f(t)
+    } finally {
+      t.close()
+    }
 
   private def getPath(path: String): Path = {
     try Paths.get(path)
