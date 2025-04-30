@@ -47,7 +47,7 @@ class FetchExtension extends DefaultClassManager {
       val url = newURL(args(0).getString)
       slurp(url.openConnection().getContentType) {
         using(url.openStream()) {
-          (urlConn) => Stream.continually(urlConn.read).takeWhile(_ != -1).map(_.toByte).toArray
+          (urlConn) => LazyList.continually(urlConn.read).takeWhile(_ != -1).map(_.toByte).toArray
         }
       }
     }
@@ -61,7 +61,7 @@ class FetchExtension extends DefaultClassManager {
       val contents =
         slurp(url.openConnection().getContentType) {
           using(url.openStream()) {
-            (urlConn) => Stream.continually(urlConn.read).takeWhile(_ != -1).map(_.toByte).toArray
+            (urlConn) => LazyList.continually(urlConn.read).takeWhile(_ != -1).map(_.toByte).toArray
           }
         }
       command.perform(context, Array(contents))

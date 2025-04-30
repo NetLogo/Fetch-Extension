@@ -22,7 +22,7 @@ object UserFile {
         gw.updateUI()
 
         EventQueue.invokeLater(new Runnable() {
-          def run() {
+          def run(): Unit = {
 
             val result =
               try {
