@@ -2,7 +2,7 @@ enablePlugins(org.nlogo.build.NetLogoExtension)
 
 netLogoExtName      := "fetch"
 netLogoClassManager := "org.nlogo.extension.fetch.FetchExtension"
-netLogoVersion      := "7.0.0-internal1"
+netLogoVersion      := "7.0.0-beta1-2bad0d8"
 netLogoTestExtras   += (baseDirectory.value / "lorem-ipsum.txt")
 
 version      := "1.0.5"
