@@ -2,7 +2,7 @@ enablePlugins(org.nlogo.build.NetLogoExtension)
 
 netLogoExtName      := "fetch"
 netLogoClassManager := "org.nlogo.extension.fetch.FetchExtension"
-netLogoVersion      := "7.0.0-beta1-c8d671e"
+netLogoVersion      := "7.0.0-beta1"
 netLogoTestExtras   += (baseDirectory.value / "lorem-ipsum.txt")
 
 version      := "1.1.0"
@@ -17,5 +17,5 @@ scalacOptions ++= Seq(
 , "-unchecked"
 , "-Xfatal-warnings"
 , "-encoding", "us-ascii"
-, "-release", "11"
+, "-release", "17"
 )
