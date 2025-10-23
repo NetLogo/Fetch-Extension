@@ -7,8 +7,7 @@ import java.nio.file.{ Files, InvalidPathException, NoSuchFileException, Path, P
 import java.util.Base64
 
 import org.nlogo.api.{ Argument, Command, Context, DefaultClassManager, ExtensionException, PrimitiveManager, Reporter }
-import org.nlogo.core.{ LogoList, Syntax }
-import org.nlogo.nvm.HaltException
+import org.nlogo.core.Syntax
 
 import scala.language.reflectiveCalls
 
