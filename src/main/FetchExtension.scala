@@ -2,7 +2,7 @@ package org.nlogo.extension.fetch
 
 import java.lang.{ Boolean => JBoolean }
 import java.io.{ Closeable, IOException }
-import java.net.{ MalformedURLException, URL }
+import java.net.{ MalformedURLException, URI, URL }
 import java.nio.file.{ Files, InvalidPathException, NoSuchFileException, Path, Paths }
 import java.util.Base64
 
@@ -115,7 +115,7 @@ class FetchExtension extends DefaultClassManager {
   }
 
   private def newURL(url: String): URL = {
-    try new URL(url)
+    try new URI(url).toURL
     catch {
       case ex: MalformedURLException =>
         throw new ExtensionException(s"Ensure that your URL is prefixed with a valid protocol (e.g. 'http://', 'https://', 'file://'): ${ex.getMessage}", ex)
